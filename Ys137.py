@@ -115,7 +115,7 @@ def check_article_exists(file_string):
 def fix_file_string(file_string):
     new_file_string = ""
     for i in file_string:
-        if i not in "<>/\|:\"*?":
+        if i not in "<>/\\|:\"*?":
             new_file_string += i
     return new_file_string
 
@@ -161,7 +161,34 @@ def start_spiders():
         print("save success!")
 
 
+def get_plain_article_dir():
+    now_path = os.getcwd()
+    dir_path = os.path.join(now_path, "ys137", "plain_articles")
+    if not os.path.exists(dir_path):
+        os.mkdir(dir_path)
+    return dir_path
 
+
+def clear_blank_lines(content):
+    new_content = ""
+    for i in content:
+        if i != '\n':
+            new_content += i
+    return new_content
+
+
+def html_to_plain_text():
+    article_path = get_article_dir_path()
+    plain_article_path = get_plain_article_dir()
+    file_list = os.listdir(article_path)
+    for file_name in file_list:
+        print(file_name)
+        file_path = os.path.join(article_path, file_name)
+        plain_file_path = os.path.join(plain_article_path, file_name)
+        with open(file_path, "r", encoding='utf8') as f:
+            s = BeautifulSoup(f, "lxml")
+            with open(plain_file_path, "w", encoding="utf8") as f1:
+                f1.write(clear_blank_lines(s.get_text()))
 
 
 def test1():
@@ -191,7 +218,16 @@ def test2():
     }
 
 
+
 if __name__ == '__main__':
-    # article_urls = test1()
-    a = test2()
-    print(a)
+    dir_path = get_spider_dir()
+    articles_path = os.path.join(dir_path, "articles")
+    file_list = os.listdir(articles_path)
+    file_path = os.path.join(articles_path, file_list[0])
+    with open(file_path, "r", encoding='utf8') as f:
+        s = BeautifulSoup(f, "lxml")
+        plain_dir = get_plain_article_dir()
+        plain_article_path = os.path.join(plain_dir,file_list[0])
+        with open(plain_article_path, "w", encoding="utf8") as f1:
+            f1.write(clear_blank_lines(s.get_text()))
+
